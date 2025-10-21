@@ -1,36 +1,35 @@
-name: Node.js CI Checks  # Name of the workflow
+name: Node.js CI Checks
 
+# Trigger on pull requests targeting the 'main' branch
 on:
-  pull_request:         # Trigger the workflow on pull requests
-    branches: [code2.0]  # Specify the branch(es) to trigger on (e.g., main, master)
+  pull_request:
+    branches: [ main ] # Changed from code2.0 to main - adjust if your main branch has a different name
 
 jobs:
-  build_and_lint:       # Name of the job
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+  build_and_lint:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [22.19.0] # Specify Node.js version(s) to use
+        # Using LTS version is generally recommended unless you need a specific newer feature
+        node-version: [18.x] # Changed from 22.19.0 to 18.x (LTS) - adjust if needed
 
     steps:
-    - name: Checkout repository # Step to check out your code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Updated to v4 (latest major version)
 
-    - name: Use Node.js ${{ matrix.node-version }} # Step to set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'        # Cache npm dependencies for faster builds
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4 # Updated to v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Install dependencies # Step to install project dependencies
-      run: npm ci             # 'ci' is generally recommended for CI environments
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Run build command   # Step to build the project
-      run: npm run build
+      - name: Run build command
+        run: npm run build
 
-    # Add this step for linting.
-    # Note: Your package.json doesn't explicitly define a 'lint' script.
-    # You might need to add one, e.g., "lint": "eslint src/**/*.js"
-    # Or adjust the command below if you use a different linting tool/command.
-    - name: Run lint command    # Step to lint the code
-      run: npm run lint       # Assumes you have an 'npm run lint' script
+      - name: Run lint command
+        # Ensure you have a "lint" script in your package.json
+        run: npm run lint
